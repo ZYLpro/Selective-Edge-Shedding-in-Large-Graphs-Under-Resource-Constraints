@@ -5,6 +5,11 @@ import matplotlib.pyplot as plt
 import EmbeddingAndKmeans
 import EmbeddingAndKmeans2
 import random
+import snap
+
+import pandas as pd
+import numpy as np
+from openpyxl import load_workbook
 
 
 def topk():
@@ -24,14 +29,14 @@ def topk():
             key = pagerank[i][0]
             nodes_G.append(key)
     end = timeit.default_timer()
-    with open("topk/email-top10%.txt", 'a') as file:
+    with open("topk/email.txt", 'a') as file:
         string = "initial--- compression:" + str(compress) + " time:" + str((end - start) / count) + '\n'
         file.write(string)
 
     start = timeit.default_timer()
     for i in range(count):
-        Gs1 = nx.read_edgelist("Data/minGrQc-edges-0.1.txt")
-        isolatednodes = getIsolatedNodes("Data/minGrQc-edges-0.1.txt", "Data/minGrQc-nodes-0.1.txt")
+        Gs1 = nx.read_edgelist("Data/minEmail-edges-0.1.txt")
+        isolatednodes = getIsolatedNodes("Data/minEmail-edges-0.1.txt", "Data/minEmail-nodes-0.1.txt")
         Gs1.add_nodes_from(isolatednodes)
         k1 = round(len(nx.nodes(Gs1)) * t / 100)
         pagerank = nx.pagerank(Gs1)
@@ -41,7 +46,7 @@ def topk():
             key = pagerank[i][0]
             nodes_GS1.append(key)
     end = timeit.default_timer()
-    with open("topk/ca-GrQc-top10%.txt", 'a') as file:
+    with open("topk/email.txt", 'a') as file:
         string = "UDS--- compression:" + str(compress) + " time:" + str((end - start) / count) + '\n'
         file.write(string)
 
@@ -56,7 +61,7 @@ def topk():
             key = pagerank[i][0]
             nodes_GS2.append(key)
     end = timeit.default_timer()
-    with open("topk/email-top10%.txt", 'a') as file:
+    with open("topk/email.txt", 'a') as file:
         string = "ADR--- compression:" + str(compress) + " time:" + str((end - start) / count) + '\n'
         file.write(string)
 
@@ -71,7 +76,7 @@ def topk():
             key = pagerank[i][0]
             nodes_GS3.append(key)
     end = timeit.default_timer()
-    with open("topk/email-top10%.txt", 'a') as file:
+    with open("topk/email.txt", 'a') as file:
         string = "ABM--- compression:" + str(compress) + " time:" + str((end - start) / count) + '\n'
         file.write(string)
 
@@ -87,7 +92,7 @@ def topk():
             if temp in nodes_G:
                 utility += 1 / len(node)
     utility /= k
-    with open("topk/ca-GrQc-top10%.txt", 'a') as file:
+    with open("topk/email.txt", 'a') as file:
         string = " UDS-utility:" + str(utility) + '\n'
         file.write(string)
 
@@ -96,7 +101,7 @@ def topk():
         if node in nodes_G:
             utility += 1
     utility /= k
-    with open("topk/email-top10%.txt", 'a') as file:
+    with open("topk/email.txt", 'a') as file:
         string = " ADR-utility:" + str(utility) + '\n'
         file.write(string)
 
@@ -105,7 +110,7 @@ def topk():
         if node in nodes_G:
             utility += 1
     utility /= k
-    with open("topk/email-top10%.txt", 'a') as file:
+    with open("topk/email.txt", 'a') as file:
         string = " ABM-utility:" + str(utility) + '\n'
         file.write(string)
 
@@ -129,7 +134,7 @@ def link():
     # for i in range(count):
     #     node2label_G = EmbeddingAndKmeans.doCluster(store00)
     # e = timeit.default_timer()
-    # with open("link/email-link.txt", 'a') as file:
+    # with open("link/email.txt", 'a') as file:
     #     string = "initial---  compression:" + str(compress) + " time:" + str(end - start + (e - s) / count) + '\n'
     #     file.write(string)
     #
@@ -146,8 +151,8 @@ def link():
     # for i in range(count):
     #     node2label_Gs1 = EmbeddingAndKmeans2.doCluster(store11)
     # e = timeit.default_timer()
-    # with open("link/email-link.txt", 'a') as file:
-    #     string = "vldb---  compression:" + str(compress) + " time:" + str(end - start + (e - s) / count) + '\n'
+    # with open("link/email.txt", 'a') as file:
+    #     string = "UDS---  compression:" + str(compress) + " time:" + str(end - start + (e - s) / count) + '\n'
     #     file.write(string)
     #
     # start = timeit.default_timer()
@@ -161,7 +166,7 @@ def link():
     # for i in range(count):
     #     node2label_Gs2 = EmbeddingAndKmeans.doCluster(store22)
     # e = timeit.default_timer()
-    # with open("link/email-link.txt", 'a') as file:
+    # with open("link/email.txt", 'a') as file:
     #     string = "ADR---  compression:" + str(compress) + " time:" + str(end - start + (e - s) / count) + '\n'
     #     # string = "ADR---  compression:" + str(compress) + " time1:" + str(end - start) + " time2:" + str(e - s) + '\n'
     #     file.write(string)
@@ -177,7 +182,7 @@ def link():
     #     Gs3 = nx.read_edgelist(path3)
     #     node2label_Gs3 = EmbeddingAndKmeans.doCluster(store33)
     # e = timeit.default_timer()
-    # with open("link/email-link.txt", 'a') as file:
+    # with open("link/email.txt", 'a') as file:
     #     string = "ABM---  compression:" + str(compress) + " time:" + str(end - start + (e - s) / count) + '\n'
     #     file.write(string)
 
@@ -321,6 +326,7 @@ def link():
         file.write(string2)
         file.write(string3)
 
+
 def getIsolatedNodes(edgepath, nodepath):
     g = nx.read_edgelist(edgepath)
     list2 = []
@@ -337,115 +343,168 @@ def getIsolatedNodes(edgepath, nodepath):
 
 
 def VertexDegree():
+    compress = 0.1
+    c = 10
+    interval = 30
     start = timeit.default_timer()
-    compress = 0.9
-    degree = nx.degree_histogram(G)  # degree distribution
-    degree_list = {}
-    count = 0
-    i = 0
-    for i in range(len(degree)):
-        count += degree[i]
-        if i % 15 == 14:
-            degree_list[i - 14] = count
-            count = 0
-    degree_list[int(i / 15) * 15] = count
+    commontext = "Email"
+    for i in range(c):
+        G = nx.read_edgelist('Database/email-Enron.txt')
+        degree = nx.degree_histogram(G)  # degree distribution
+        degree_list = {}
+        count = 0
+        # i = 0
+        for i in range(len(degree)):  # i->degree, degree[i]->nums
+            count += degree[i]
+            if i > 300:
+                j = 299
+            else:
+                j = i
+            key = int(math.floor(j) / interval) * interval
+            # key = int(math.floor(i) / interval) * interval
+            if key in degree_list:
+                number = degree_list[key]
+                degree_list[key] = number + degree[i]
+            else:
+                degree_list[key] = degree[i]
     end = timeit.default_timer()
-    with open("degree/ca-GrQc-degree.txt", 'a') as file:
-        string = "initial---  "+"compression:" + str(compress) + " time:" + str(end - start) + '\n'
+    with open("degree/email.txt", 'a') as file:
+        string = "initial---  "+"compression:" + str(compress) + " time:" + str((end - start) / c) + '\n'
         file.write(string)
 
     start = timeit.default_timer()
-    Gs1 = nx.read_edgelist("Data/minGrQc-edges-0.9.txt")
-    isolatednodes = getIsolatedNodes("Data/minGrQc-edges-0.9.txt", "Data/minGrQc-nodes-0.9.txt")
-    Gs1.add_nodes_from(isolatednodes)
-    degree1 = nx.degree_histogram(Gs1)
-    degree_list1 = {}
-    count = 0
-    i = 0
-    for i in range(len(degree1)):
-        count += degree1[i]
-        if i % 15 == 14:
-            degree_list1[i - 14] = count
-            count = 0
-    degree_list1[int(i / 15) * 15] = count
+    for i in range(c):
+        edgename = "Data/min" + commontext + "-edges-" + str(compress) + ".txt"
+        nodename = "Data/min" + commontext + "-nodes-" + str(compress) + ".txt"
+        Gs1 = nx.read_edgelist(edgename)
+        isolatednodes = getIsolatedNodes(edgename, nodename)
+        Gs1.add_nodes_from(isolatednodes)
+        degree1 = nx.degree_histogram(Gs1)
+        degree_list1 = {}
+        count = 0
+        i = 0
+        for i in range(len(degree1)):
+            count += degree1[i]
+            if i > 300:
+                j = 299
+            else:
+                j = i
+            key = int(math.floor(j) / interval) * interval
+            # key = int(math.floor(i) / interval) * interval
+            if key in degree_list1:
+                number = degree_list1[key]
+                degree_list1[key] = number + degree1[i]
+            else:
+                degree_list1[key] = degree1[i]
     end = timeit.default_timer()
-    with open("degree/ca-GrQc-degree.txt", 'a') as file:
-        string = "vldb---  " + "compression:" + str(compress) + " time:" + str(end - start) + '\n'
+    with open("degree/email.txt", 'a') as file:
+        string = "UDS---  " + "compression:" + str(compress) + " time:" + str((end - start) / c) + '\n'
         file.write(string)
 
     start = timeit.default_timer()
-    Gs2 = nx.read_edgelist("Data/minGrQc-edges-ADR-0.9.txt")
-    degree2 = nx.degree_histogram(Gs2)
-    degree_list2 = {}
-    count = 0
-    for i in range(len(degree2)):  # i是真实的度，需要乘以系数
-        count += degree2[i]
-        j = i * (1 / compress)
-        # s * 10就是界限，超过就属于下一个key
-        key = int(math.floor(j) / 15) * 15
-        if key in degree_list2:
-            number = degree_list2[key]
-            degree_list2[key] = number + degree2[i]
-        else:
-            degree_list2[key] = degree2[i]
+    for i in range(c):
+        edgename = "Data/min" + commontext + "-edges-ADR-" + str(compress) + ".txt"
+        Gs2 = nx.read_edgelist(edgename)
+        degree2 = nx.degree_histogram(Gs2)
+        degree_list2 = {}
+        count = 0
+        for i in range(len(degree2)):  # estimation
+            count += degree2[i]
+            j = i * (1 / compress)
+            if j > 300:
+                j = 299
+            key = int(math.floor(j) / interval) * interval
+            if key in degree_list2:
+                number = degree_list2[key]
+                degree_list2[key] = number + degree2[i]
+            else:
+                degree_list2[key] = degree2[i]
     end = timeit.default_timer()
-    with open("degree/ca-GrQc-degree.txt", 'a') as file:
-        string = "ADR---  " + "compression:" + str(compress) + " time:" + str(end - start) + '\n'
+    with open("degree/email.txt", 'a') as file:
+        string = "ADR---  " + "compression:" + str(compress) + " time:" + str((end - start) / c) + '\n'
         file.write(string)
 
     start = timeit.default_timer()
-    Gs3= nx.read_edgelist("Data/minGrQc-edges-ABM-0.9.txt")
-    degree3 = nx.degree_histogram(Gs3)
-    degree_list3 = {}
-    count = 0
-    for i in range(len(degree3)):  # i是真实的度，需要乘以系数
-        count += degree3[i]
-        j = i * (1 / compress)
-        # s * 10就是界限，超过就属于下一个key
-        key = int(math.floor(j) / 15) * 15
-        if key in degree_list3:
-            number = degree_list3[key]
-            degree_list3[key] = number + degree3[i]
-        else:
-            degree_list3[key] = degree3[i]
+    for i in range(c):
+        edgename = "Data/min" + commontext + "-edges-ABM-" + str(compress) + ".txt"
+        Gs3= nx.read_edgelist(edgename)
+        degree3 = nx.degree_histogram(Gs3)
+        degree_list3 = {}
+        count = 0
+        for i in range(len(degree3)):  # estimation
+            count += degree3[i]
+            j = i * (1 / compress)
+            if j > 300:
+                j = 299
+            key = int(math.floor(j) / interval) * interval
+            if key in degree_list3:
+                number = degree_list3[key]
+                degree_list3[key] = number + degree3[i]
+            else:
+                degree_list3[key] = degree3[i]
     end = timeit.default_timer()
-    with open("degree/ca-GrQc-degree.txt", 'a') as file:
-        string = "ABM---  " + "compression:" + str(compress) + " time:" + str(end - start) + '\n'
+    with open("degree/email.txt", 'a') as file:
+        string = "ABM---  " + "compression:" + str(compress) + " time:" + str((end - start) / c) + '\n' + '\n'
         file.write(string)
 
     x = list(degree_list.keys())
-    y = [z / float(sum(degree_list.values())) for z in degree_list.values()]  # 原图
+    y = [z / float(sum(degree_list.values())) for z in degree_list.values()]  # initial
     x1 = list(degree_list1.keys())
-    y1 = [z / float(sum(degree_list1.values())) for z in degree_list1.values()]  # 压缩图
+    y1 = [z / float(sum(degree_list1.values())) for z in degree_list1.values()]  # UDS
     x2 = list(degree_list2.keys())
-    y2 = [z / float(sum(degree_list2.values())) for z in degree_list2.values()]  # ADR压缩图
+    y2 = [z / float(sum(degree_list2.values())) for z in degree_list2.values()]  # ADR
     x3 = list(degree_list3.keys())
-    y3 = [z / float(sum(degree_list3.values())) for z in degree_list3.values()]  # ABM压缩图
-    print("----")
-    plt.plot(x, y, marker='o', mec='k', mfc='w', c='k', label=u'initial')
-    plt.plot(x1, y1, marker='v', mec='#EEB422', mfc='w', c='#EEB422', label=u'vldb-0.9')
-    plt.plot(x2, y2, marker='s', mec='r', mfc='w', c='r', label=u'ADR-0.9')
-    plt.plot(x3, y3, marker='+', mec='#00BFFF', mfc='w', c='#00BFFF', label=u'ABM-0.9')
+    y3 = [z / float(sum(degree_list3.values())) for z in degree_list3.values()]  # ABM
 
-    plt.legend()  # 让图例生效
+    # save the data
+    A = np.array([x,y])
+    A1 = np.array([x1,y1])
+    A2 = np.array([x2, y2])
+    A3 = np.array([x3, y3])
+    data = pd.DataFrame(A)
+    data1 = pd.DataFrame(A1)
+    data2 = pd.DataFrame(A2)
+    data3 = pd.DataFrame(A3)
+
+    book = load_workbook('Picture/degree.xlsx')
+    writer = pd.ExcelWriter('Picture/degree.xlsx', engine='openpyxl')
+    writer.book = book
+
+    pagename = "email" + str(compress)
+    data.to_excel(writer, sheet_name=pagename,float_format='%.5f')
+    data1.to_excel(writer, sheet_name=pagename,startrow=3, float_format='%.5f')
+    data2.to_excel(writer, sheet_name=pagename, startrow=6, float_format='%.5f')
+    data3.to_excel(writer, sheet_name=pagename, startrow=9, float_format='%.5f')
+    writer.save()
+
+    writer.close()
+
+    plt.plot(x, y, marker='o', mec='k', mfc='w', c='k', label=u'initial')
+    plt.plot(x1, y1, marker='v', mec='#EEB422', mfc='w', c='#EEB422', label=u'UDS')
+    plt.plot(x2, y2, marker='s', mec='r', mfc='w', c='r', label=u'ADR')
+    plt.plot(x3, y3, marker='+', mec='#00BFFF', mfc='w', c='#00BFFF', label=u'ABM')
+
+    plt.legend()
     plt.xticks(x, list(degree_list.keys()))
     plt.margins(0)
     plt.subplots_adjust(bottom=0.15)
-    plt.xlabel(u"degree")  # X轴标签
-    plt.ylabel("% of vertices")  # Y轴标签
-    plt.title("caGrQc")  # 标题
+    plt.xlabel(u"degree")  # X
+    plt.ylabel("% of vertices")  # Y
+    plt.title("email-Enron")  # title
 
     plt.show()
 
 
 def ShortPath():
-    compress = 0.1
+    compress = 0.9
     start = timeit.default_timer()
+    G = nx.read_edgelist('Database/email-Enron.txt')
+    commontext = "Email"
     sp = dict(nx.shortest_path_length(G))
     length2num = {}
-    num = 0  # 统计所有可达节点对的个数
+    num = 0  # nums of reachable nodes
     for source in sp:
-        num += (len(sp[source]) - 1)  # 去掉自己到自己的0
+        num += (len(sp[source]) - 1)
         for target in sp[source]:
             length = sp[source][target]
             if length not in length2num.keys():
@@ -455,13 +514,15 @@ def ShortPath():
                 length2num[length] = temp + 1
     length2num[0] = 0
     end = timeit.default_timer()
-    with open("sp/ca-GrQc-sp.txt", 'a') as file:
+    with open("sp/email.txt", 'a') as file:
         string = "initial--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
         file.write(string)
 
     start = timeit.default_timer()
-    Gs1 = nx.read_edgelist("Data/minGrQc-edges-0.1.txt")
-    isolatednodes = getIsolatedNodes("Data/minGrQc-edges-0.1.txt", "Data/minGrQc-nodes-0.1.txt")
+    edgename = "Data/min" + commontext + "-edges-" + str(compress) + ".txt"
+    nodename = "Data/min" + commontext + "-nodes-" + str(compress) + ".txt"
+    Gs1 = nx.read_edgelist(edgename)
+    isolatednodes = getIsolatedNodes(edgename, nodename)
     Gs1.add_nodes_from(isolatednodes)
     sp1 = dict(nx.shortest_path_length(Gs1))
     length2num1 = {}
@@ -469,9 +530,7 @@ def ShortPath():
     for source in sp1:
         num1 += (len(sp1[source]) - 1)
         for target in sp1[source]:
-            # length = sp1[source][target]
             length = round(sp1[source][target] * (compress + (1 - compress) * 0.5))
-
             if length not in length2num1.keys():
                 length2num1[length] = 1
             else:
@@ -479,21 +538,19 @@ def ShortPath():
                 length2num1[length] = temp + 1
     length2num1[0] = 0
     end = timeit.default_timer()
-    with open("sp/ca-GrQc-sp.txt", 'a') as file:
-        string = "vldb--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
+    with open("sp/email.txt", 'a') as file:
+        string = "UDS--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
         file.write(string)
 
     start = timeit.default_timer()
-    Gs2 = nx.read_edgelist("Data/minGrQc-edges-ADR-0.1.txt")
+    edgename = "Data/min" + commontext + "-edges-ADR-" + str(compress) + ".txt"
+    Gs2 = nx.read_edgelist(edgename)
     sp2 = dict(nx.shortest_path_length(Gs2))
     length2num2 = {}
     num2 = 0
     for source in sp2:
         num2 += (len(sp2[source]) - 1)
         for target in sp2[source]:
-            # length = sp2[source][target]
-            # length = round(sp2[source][target] - base * (1 - compress))
-            # length = round(sp2[source][target] * compress * ss)
             length = round(sp2[source][target] * (compress + (1 - compress) * 0.5))
 
             if length not in length2num2.keys():
@@ -503,21 +560,19 @@ def ShortPath():
                 length2num2[length] = temp + 1
     length2num2[0] = 0
     end = timeit.default_timer()
-    with open("sp/ca-GrQc-sp.txt", 'a') as file:
+    with open("sp/email.txt", 'a') as file:
         string = "ADR--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
         file.write(string)
 
     start = timeit.default_timer()
-    Gs3 = nx.read_edgelist("Data/minGrQc-edges-ABM-0.1.txt")
+    edgename = "Data/min" + commontext + "-edges-ABM-" + str(compress) + ".txt"
+    Gs3 = nx.read_edgelist(edgename)
     sp3 = dict(nx.shortest_path_length(Gs3))
     length2num3 = {}
     num3 = 0
     for source in sp3:
         num3 += (len(sp3[source]) - 1)
         for target in sp3[source]:
-            # length = sp3[source][target]
-            # length = round(sp3[source][target] - base * (1 - compress))
-            # length = round(sp3[source][target] * compress * ss)
             length = round(sp3[source][target] * (compress + (1 - compress) * 0.5))
 
             if length not in length2num3.keys():
@@ -527,8 +582,8 @@ def ShortPath():
                 length2num3[length] = temp + 1
     length2num3[0] = 0
     end = timeit.default_timer()
-    with open("sp/ca-GrQc-sp.txt", 'a') as file:
-        string = "ABM--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
+    with open("sp/email.txt", 'a') as file:
+        string = "ABM--- compression:" + str(compress) + " time:" + str(end - start) + '\n'  + '\n'
         file.write(string)
 
     length2num = sorted(length2num.items(), key=lambda x: x[0])
@@ -545,38 +600,64 @@ def ShortPath():
     x3 = [z[0] for z in length2num3]
     y3 = [z[1] / num3 for z in length2num3]
 
-    plt.plot(x, y, marker='o', mec='k', mfc='w', c='k', label=u'initial')
-    plt.plot(x1, y1, marker='v', mec='#EEB422', mfc='w', c='#EEB422', label=u'vldb-0.1')
-    plt.plot(x2, y2, marker='s', mec='r', mfc='w', c='r', label=u'ADR-0.1')
-    plt.plot(x3, y3, marker='+', mec='#00BFFF', mfc='w', c='#00BFFF', label=u'ABM-0.1')
+    # save
+    A = np.array([x, y])
+    A1 = np.array([x1, y1])
+    A2 = np.array([x2, y2])
+    A3 = np.array([x3, y3])
 
-    plt.legend()  # 让图例生效
+    data = pd.DataFrame(A)
+    data1 = pd.DataFrame(A1)
+    data2 = pd.DataFrame(A2)
+    data3 = pd.DataFrame(A3)
+
+    book = load_workbook('Picture/sp.xlsx')
+    writer = pd.ExcelWriter('Picture/sp.xlsx', engine='openpyxl')
+    writer.book = book
+
+    pagename = "email" + str(compress)
+    data.to_excel(writer, sheet_name=pagename, float_format='%.5f')
+    data1.to_excel(writer, sheet_name=pagename, startrow=3, float_format='%.5f')
+    data2.to_excel(writer, sheet_name=pagename, startrow=6, float_format='%.5f')
+    data3.to_excel(writer, sheet_name=pagename, startrow=9, float_format='%.5f')
+    writer.save()
+
+    writer.close()
+
+    plt.plot(x, y, marker='o', mec='k', mfc='w', c='k', label=u'initial')
+    plt.plot(x1, y1, marker='v', mec='#EEB422', mfc='w', c='#EEB422', label=u'UDS')
+    plt.plot(x2, y2, marker='s', mec='r', mfc='w', c='r', label=u'ADR')
+    plt.plot(x3, y3, marker='+', mec='#00BFFF', mfc='w', c='#00BFFF', label=u'ABM')
+
+    plt.legend()
     plt.xticks(x, [z[0] for z in length2num])
     plt.margins(0)
     plt.subplots_adjust(bottom=0.15)
-    plt.xlabel(u"SP distance")  # X轴标签
-    plt.ylabel("% of vertex pairs")  # Y轴标签
-    plt.title("caGrQc")  # 标题
+    plt.xlabel(u"SP distance")  # X
+    plt.ylabel("% of vertex pairs")  # Y
+    plt.title("email-Enron")  # title
 
     plt.show()
 
 
 def centrality():
-    compress = 0.9
-
+    compress = 0.6
+    interval = 50
+    count = 1
+    commontext = "HepPh"
     start = timeit.default_timer()
-    for i in range(10):
-        G = nx.read_edgelist('Database/email-Enron.txt')
+    for i in range(count):
+        G = nx.read_edgelist('Database/ca-HepPh.txt')
         degree2bc = {}
-        degree2count = {}  # 因为要求平均值，所以需要统计个数
+        degree2count = {}  # nums
         bc = nx.betweenness_centrality(G)
 
         degree = nx.degree(G)
         for tuple in degree:
             node = tuple[0]
             d = tuple[1]
-            # 确定区间 区间长为15
-            key = int(math.floor(d / 10)) * 10
+
+            key = int(math.floor(d / interval)) * interval
             if key not in degree2bc.keys():
                 degree2bc[key] = bc[node]
                 degree2count[key] = 1
@@ -589,25 +670,27 @@ def centrality():
             centrality = degree2bc[d]
             degree2bc[d] = centrality / degree2count[d]
     end = timeit.default_timer()
-    with open("centrality/ca-GrQc-centrality.txt", 'a') as file:
-        string = "initial--- compression:" + str(compress) + " time:" + str((end - start) / 10) + '\n'
+    with open("centrality/caHepPh.txt", 'a') as file:
+        string = "initial--- compression:" + str(compress) + " time:" + str((end - start) / count) + '\n'
         file.write(string)
 
     start = timeit.default_timer()
-    for i in range(10):
-        Gs1 = nx.read_edgelist("Data/minGrQc-edges-0.9.txt")
-        isolatednodes = getIsolatedNodes("Data/minGrQc-edges-0.9.txt", "Data/minGrQc-nodes-0.9.txt")
+    for i in range(count):
+        edgename = "Data/min" + commontext + "-edges-" + str(compress) + ".txt"
+        nodename = "Data/min" + commontext + "-nodes-" + str(compress) + ".txt"
+        Gs1 = nx.read_edgelist(edgename)
+        isolatednodes = getIsolatedNodes(edgename, nodename)
         Gs1.add_nodes_from(isolatednodes)
         degree2bc1 = {}
-        degree2count1 = {}  # 因为要求平均值，所以需要统计个数
+        degree2count1 = {}
         bc1 = nx.betweenness_centrality(Gs1)
 
         degree1 = nx.degree(Gs1)
         for tuple in degree1:
             node = tuple[0]
             d = tuple[1]
-            # 确定区间 区间长为15
-            key = int(math.floor(d / 10)) * 10
+
+            key = int(math.floor(d / interval)) * interval
             if key not in degree2bc1.keys():
                 degree2bc1[key] = bc1[node]
                 degree2count1[key] = 1
@@ -620,23 +703,24 @@ def centrality():
             centrality = degree2bc1[d]
             degree2bc1[d] = centrality / degree2count1[d]
     end = timeit.default_timer()
-    with open("centrality/ca-GrQc-centrality.txt", 'a') as file:
-        string = "vldb--- compression:" + str(compress) + " time:" + str((end - start) / 10) + '\n'
+    with open("centrality/caHepPh.txt", 'a') as file:
+        string = "UDS--- compression:" + str(compress) + " time:" + str((end - start) / count) + '\n'
         file.write(string)
 
     start = timeit.default_timer()
-    for i in range(10):
-        Gs2 = nx.read_edgelist("Data/minGrQc-edges-ADR-0.9.txt")
+    for i in range(count):
+        edgename = "Data/min" + commontext + "-edges-ADR-" + str(compress) + ".txt"
+        Gs2 = nx.read_edgelist(edgename)
         degree2bc2 = {}
-        degree2count2 = {}  # 因为要求平均值，所以需要统计个数
+        degree2count2 = {}
         bc2 = nx.betweenness_centrality(Gs2)
 
         degree2 = nx.degree(Gs2)
         for tuple in degree2:
             node = tuple[0]
             d = tuple[1]
-            # 确定区间 区间长为15
-            key = int(math.floor((d / compress) / 10)) * 10
+
+            key = int(math.floor((d / compress) / interval)) * interval
             if key not in degree2bc2.keys():
                 degree2bc2[key] = bc2[node]  # / ((2 - compress) * compress)
                 degree2count2[key] = 1
@@ -649,23 +733,24 @@ def centrality():
             centrality = degree2bc2[d]
             degree2bc2[d] = centrality / degree2count2[d]
     end = timeit.default_timer()
-    with open("centrality/ca-GrQc-centrality.txt", 'a') as file:
-        string = "ADR--- compression:" + str(compress) + " time:" + str((end - start) / 10) + '\n'
+    with open("centrality/caHepPh", 'a') as file:
+        string = "ADR--- compression:" + str(compress) + " time:" + str((end - start) / count) + '\n'
         file.write(string)
 
     start = timeit.default_timer()
-    for i in range(10):
-        Gs3 = nx.read_edgelist("Data/minGrQc-edges-ABM-0.9.txt")
+    for i in range(count):
+        edgename = "Data/min" + commontext + "-edges-ABM-" + str(compress) + ".txt"
+        Gs3 = nx.read_edgelist(edgename)
         degree2bc3 = {}
-        degree2count3 = {}  # 因为要求平均值，所以需要统计个数
+        degree2count3 = {}
         bc3 = nx.betweenness_centrality(Gs3)
 
         degree3 = nx.degree(Gs3)
         for tuple in degree3:
             node = tuple[0]
             d = tuple[1]
-            # 确定区间 区间长为15
-            key = int(math.floor((d / compress) / 10)) * 10
+
+            key = int(math.floor((d / compress) / interval)) * interval
             if key not in degree2bc3.keys():
                 degree2bc3[key] = bc3[node]  # / ((2 - compress) * compress)
                 degree2count3[key] = 1
@@ -678,8 +763,8 @@ def centrality():
             centrality = degree2bc3[d]
             degree2bc3[d] = centrality / degree2count3[d]
     end = timeit.default_timer()
-    with open("centrality/ca-GrQc-centrality.txt", 'a') as file:
-        string = "ABM--- compression:" + str(compress) + " time:" + str((end - start) / 10) + '\n'
+    with open("centrality/caHepPh.txt", 'a') as file:
+        string = "ABM--- compression:" + str(compress) + " time:" + str((end - start) / count) + '\n' + '\n'
         file.write(string)
 
     degree2bc = sorted(degree2bc.items(), key=lambda x: x[0])
@@ -696,36 +781,61 @@ def centrality():
     x3 = [z[0] for z in degree2bc3]
     y3 = [z[1] for z in degree2bc3]
 
-    plt.plot(x, y, marker='o', mec='k', mfc='w', c='k', label=u'initial')
-    plt.plot(x1, y1, marker='v', mec='#EEB422', mfc='w', c='#EEB422', label=u'vldb-0.9')
-    plt.plot(x2, y2, marker='s', mec='r', mfc='w', c='r', label=u'ADR-0.9')
-    plt.plot(x3, y3, marker='+', mec='#00BFFF', mfc='w', c='#00BFFF', label=u'ABM-0.9')
+    # save
+    A = np.array([x, y])
+    A1 = np.array([x1, y1])
+    A2 = np.array([x2, y2])
+    A3 = np.array([x3, y3])
 
-    plt.legend()  # 让图例生效
+    data = pd.DataFrame(A)
+    data1 = pd.DataFrame(A1)
+    data2 = pd.DataFrame(A2)
+    data3 = pd.DataFrame(A3)
+
+    book = load_workbook('Picture/bc.xlsx')
+    writer = pd.ExcelWriter('Picture/bc.xlsx', engine='openpyxl')
+    writer.book = book
+
+    pagename = "caHepPh" + str(compress)
+    data.to_excel(writer, sheet_name=pagename, float_format='%.5f')
+    data1.to_excel(writer, sheet_name=pagename, startrow=3, float_format='%.5f')
+    data2.to_excel(writer, sheet_name=pagename, startrow=6, float_format='%.5f')
+    data3.to_excel(writer, sheet_name=pagename, startrow=9, float_format='%.5f')
+    writer.save()
+
+    writer.close()
+
+    plt.plot(x, y, marker='o', mec='k', mfc='w', c='k', label=u'initial')
+    plt.plot(x1, y1, marker='v', mec='#EEB422', mfc='w', c='#EEB422', label=u'UDS')
+    plt.plot(x2, y2, marker='s', mec='r', mfc='w', c='r', label=u'ADR')
+    plt.plot(x3, y3, marker='+', mec='#00BFFF', mfc='w', c='#00BFFF', label=u'ABM')
+
+    plt.legend()
     plt.xticks(x, [z[0] for z in degree2bc])
     plt.margins(0)
     plt.subplots_adjust(bottom=0.15)
-    plt.xlabel(u"degree")  # X轴标签
-    plt.ylabel(u"betweenness centrality")  # Y轴标签
-    plt.title("caGrQc")  # 标题
+    plt.xlabel(u"degree")  # X
+    plt.ylabel(u"betweenness centrality")  # Y
+    plt.title("ca-HepPh")  # title
 
     plt.show()
 
 
 def coefficient():
-    compress=0.9
-
-    start=timeit.default_timer()
-    degree2cc={}
-    degree2ccount={}
-    cc=nx.clustering(G)
-
-    degree=nx.degree(G)
+    compress = 0.9
+    commontext = "GrQc"
+    interval = 10
+    start = timeit.default_timer()
+    G = nx.read_edgelist('Database/ca-GrQc.txt')
+    degree2cc = {}
+    degree2ccount = {}
+    cc = nx.clustering(G)
+    degree = nx.degree(G)
     for tuple in degree:
         node = tuple[0]
         d = tuple[1]
-        # 确定区间 区间长为10
-        key = int(math.floor(d / 50)) * 50
+
+        key = int(math.floor(d / interval)) * interval
         if key not in degree2cc.keys():
             degree2cc[key] = cc[node]
             degree2ccount[key] = 1
@@ -736,29 +846,32 @@ def coefficient():
             degree2ccount[key] = tempcount + 1
 
     for c in degree2cc:
-        coeff=degree2cc[c]
-        degree2cc[c]=coeff/degree2ccount[c]
-    end=timeit.default_timer()
-    with open("coefficient/ca-GrQc-cc.txt",'a') as file:
+        coeff = degree2cc[c]
+        degree2cc[c] = coeff / degree2ccount[c]
+    end = timeit.default_timer()
+    # del G
+    # del cc
+    # del degree
+    # del degree2ccount
+    with open("cc/caGrQc.txt", 'a') as file:
         string = "initial--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
         file.write(string)
 
-
     start = timeit.default_timer()
-    Gs1 = nx.read_edgelist("Data/minHepPh-edges-0.9.txt")
-    isolatednodes = getIsolatedNodes("Data/minHepPh-edges-0.9.txt", "Data/minHepPh-nodes-0.9.txt")
+    edgename = "Data/min" + commontext + "-edges-" + str(compress) + ".txt"
+    nodename = "Data/min" + commontext + "-nodes-" + str(compress) + ".txt"
+    Gs1 = nx.read_edgelist(edgename)
+    isolatednodes = getIsolatedNodes(edgename, nodename)
     Gs1.add_nodes_from(isolatednodes)
     degree2cc1 = {}
-    degree2ccount1 = {}  # 因为要求平均值，所以需要统计个数
+    degree2ccount1 = {}  # nums
     cc1 = nx.clustering(Gs1)
-
-    
     degree1 = nx.degree(Gs1)
     for tuple in degree1:
         node = tuple[0]
         d = tuple[1]
-        # 确定区间 区间长为15
-        key = int(math.floor(d / 50)) * 50
+
+        key = int(math.floor(d / interval)) * interval
         if key not in degree2cc1.keys():
             degree2cc1[key] = cc1[node]
             degree2ccount1[key] = 1
@@ -771,65 +884,75 @@ def coefficient():
         coeff = degree2cc1[d]
         degree2cc1[d] = coeff / degree2ccount1[d]
     end = timeit.default_timer()
-    with open("coefficient/ca-GrQc-cc.txt", 'a') as file:
-        string = "vldb--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
+    # del Gs1
+    # del cc1
+    # del degree1
+    # del degree2ccount1
+    with open("cc/caGrQc.txt", 'a') as file:
+        string = "UDS--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
         file.write(string)
 
-
     start = timeit.default_timer()
-    Gs2 = nx.read_edgelist("Data/minHepPh-edges-ADR-0.9.txt")
+    edgename = "Data/min" + commontext + "-edges-ADR-" + str(compress) + ".txt"
+    Gs2 = nx.read_edgelist(edgename)
     degree2cc2 = {}
-    degree2ccount2 = {}  # 因为要求平均值，所以需要统计个数
+    degree2ccount2 = {}  # nums
     cc2 = nx.clustering(Gs2)
-
-
     degree2 = nx.degree(Gs2)
     for tuple in degree2:
         node = tuple[0]
         d = tuple[1]
-        # 确定区间 区间长为15
-        key = int(math.floor((d / compress) / 50)) * 50
+
+        key = int(math.floor((d / compress) / interval)) * interval
         if key not in degree2cc2.keys():
-            degree2cc2[key] = cc2[node]/(1-0.7*(1-compress))
+            degree2cc2[key] = cc2[node] / compress
             degree2ccount2[key] = 1
         else:
             temp = degree2cc2[key]
-            degree2cc2[key] = temp + cc2[node]/(1-0.7*(1-compress))
+            degree2cc2[key] = temp + cc2[node] / compress
             tempcount = degree2ccount2[key]
             degree2ccount2[key] = tempcount + 1
     for d in degree2cc2:
         coeff = degree2cc2[d]
         degree2cc2[d] = coeff / degree2ccount2[d]
     end = timeit.default_timer()
-    with open("coefficient/ca-GrQc-cc.txt", 'a') as file:
+    # del Gs2
+    # del cc2
+    # del degree2
+    # del degree2ccount2
+    with open("cc/caGrQc.txt", 'a') as file:
         string = "ADR--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
         file.write(string)
 
     start = timeit.default_timer()
-    Gs3 = nx.read_edgelist("Data/minHepPh-edges-ABM-0.9.txt")
+    edgename = "Data/min" + commontext + "-edges-ABM-" + str(compress) + ".txt"
+    Gs3 = nx.read_edgelist(edgename)
     degree2cc3 = {}
-    degree2ccount3 = {}  # 因为要求平均值，所以需要统计个数
+    degree2ccount3 = {}  # nums
     cc3 = nx.clustering(Gs3)
-
     degree3 = nx.degree(Gs3)
     for tuple in degree3:
         node = tuple[0]
         d = tuple[1]
-        # 确定区间 区间长为15
-        key = int(math.floor((d / compress) / 50)) * 50
+
+        key = int(math.floor((d / compress) / interval)) * interval
         if key not in degree2cc3.keys():
-            degree2cc3[key] = cc3[node]/(1-0.7*(1-compress))
+            degree2cc3[key] = cc3[node] / compress
             degree2ccount3[key] = 1
         else:
             temp = degree2cc3[key]
-            degree2cc3[key] = temp + cc3[node]/(1-0.7*(1-compress))
+            degree2cc3[key] = temp + cc3[node] / compress
             tempcount = degree2ccount3[key]
             degree2ccount3[key] = tempcount + 1
     for d in degree2cc3:
         coeff = degree2cc3[d]
         degree2cc3[d] = coeff / degree2ccount3[d]
     end = timeit.default_timer()
-    with open("coefficient/ca-GrQc-cc.txt", 'a') as file:
+    # del Gs3
+    # del cc3
+    # del degree3
+    # del degree2ccount3
+    with open("cc/caGrQc.txt", 'a') as file:
         string = "ABM--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
         file.write(string)
 
@@ -847,411 +970,427 @@ def coefficient():
     x3 = [z[0] for z in degree2cc3]
     y3 = [z[1] for z in degree2cc3]
 
-    plt.plot(x, y, marker='o', mec='k', mfc='w', c='k', label=u'initial')
-    plt.plot(x1, y1, marker='v', mec='#EEB422', mfc='w', c='#EEB422', label=u'vldb-0.9')
-    plt.plot(x2, y2, marker='s', mec='r', mfc='w', c='r', label=u'ADR-0.9')
-    plt.plot(x3, y3, marker='+', mec='#00BFFF', mfc='w', c='#00BFFF', label=u'ABM-0.9')
+    # save
+    A = np.array([x, y])
+    A1 = np.array([x1, y1])
+    A2 = np.array([x2, y2])
+    A3 = np.array([x3, y3])
 
-    plt.legend()  # 让图例生效
+    data = pd.DataFrame(A)
+    data1 = pd.DataFrame(A1)
+    data2 = pd.DataFrame(A2)
+    data3 = pd.DataFrame(A3)
+
+    book = load_workbook('Picture/cc.xlsx')
+    writer = pd.ExcelWriter('Picture/cc.xlsx', engine='openpyxl')
+    writer.book = book
+
+    pagename = "caGrQc" + str(compress)
+    data.to_excel(writer, sheet_name=pagename, float_format='%.5f')
+    data1.to_excel(writer, sheet_name=pagename, startrow=3, float_format='%.5f')
+    data2.to_excel(writer, sheet_name=pagename, startrow=6, float_format='%.5f')
+    data3.to_excel(writer, sheet_name=pagename, startrow=9, float_format='%.5f')
+    writer.save()
+
+    writer.close()
+
+    plt.plot(x, y, marker='o', mec='k', mfc='w', c='k', label=u'initial')
+    plt.plot(x1, y1, marker='v', mec='#EEB422', mfc='w', c='#EEB422', label=u'UDS')
+    plt.plot(x2, y2, marker='s', mec='r', mfc='w', c='r', label=u'ADR')
+    plt.plot(x3, y3, marker='+', mec='#00BFFF', mfc='w', c='#00BFFF', label=u'ABM')
+
+    plt.legend()
     plt.xticks(x, [z[0] for z in degree2cc])
     plt.margins(0)
     plt.subplots_adjust(bottom=0.15)
-    plt.xlabel(u"degree")  # X轴标签
-    plt.ylabel(u"clustering coefficient")  # Y轴标签
-    plt.title("ca-HepPh")  # 标题
+    plt.xlabel(u"degree")  # X
+    plt.ylabel(u"clustering coefficient")  # Y
+    plt.title("ca-GrQc")  # title
 
     plt.show()
 
+
 def hopplot():
     compress = 0.1
+    base = 2
+    commontext = "GrQc"
+
     start = timeit.default_timer()
-
     G = nx.read_edgelist('Database/ca-GrQc.txt')
-    components = nx.connected_components(G)
-    pairs = []
+    paths = dict(nx.shortest_path_length(G))
     set = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    num=0
-    for c in components:
-        c = list(c)
-        for i in range(len(c) - 1):
-            for j in range(i + 1, len(c)):
-                pairs.append((c[i], c[j]))
-                num=num+1
-    number = len(nx.nodes(G)) * (len(nx.nodes(G)) - 1) / 2
-    print(num)
-    print(number)
-    for pair in pairs:
-        length = nx.shortest_path_length(G, pair[0], pair[1])
-        if length < 5:
-            set[1] = set[1] + 1
-            set[2] = set[2] + 1
-            set[3] = set[3] + 1
-            set[4] = set[4] + 1
-            set[5] = set[5] + 1
-            set[6] = set[6] + 1
-            set[7] = set[7] + 1
-            set[8] = set[8] + 1
-            set[9] = set[9] + 1
-            set[10] = set[10] + 1
-        elif length < 10:
-            set[2] = set[2] + 1
-            set[3] = set[3] + 1
-            set[4] = set[4] + 1
-            set[5] = set[5] + 1
-            set[6] = set[6] + 1
-            set[7] = set[7] + 1
-            set[8] = set[8] + 1
-            set[9] = set[9] + 1
-            set[10] = set[10] + 1
-        elif length < 15:
-            set[3] = set[3] + 1
-            set[4] = set[4] + 1
-            set[5] = set[5] + 1
-            set[6] = set[6] + 1
-            set[7] = set[7] + 1
-            set[8] = set[8] + 1
-            set[9] = set[9] + 1
-            set[10] = set[10] + 1
-        elif length < 20:
-            set[4] = set[4] + 1
-            set[5] = set[5] + 1
-            set[6] = set[6] + 1
-            set[7] = set[7] + 1
-            set[8] = set[8] + 1
-            set[9] = set[9] + 1
-            set[10] = set[10] + 1
-        elif length < 25:
-            set[5] = set[5] + 1
-            set[6] = set[6] + 1
-            set[7] = set[7] + 1
-            set[8] = set[8] + 1
-            set[9] = set[9] + 1
-            set[10] = set[10] + 1
-        elif length < 30:
-            set[6] = set[6] + 1
-            set[7] = set[7] + 1
-            set[8] = set[8] + 1
-            set[9] = set[9] + 1
-            set[10] = set[10] + 1
-        elif length < 35:
-            set[7] = set[7] + 1
-            set[8] = set[8] + 1
-            set[9] = set[9] + 1
-            set[10] = set[10] + 1
-        elif length < 40:
-            set[8] = set[8] + 1
-            set[9] = set[9] + 1
-            set[10] = set[10] + 1
-        elif length < 45:
-            set[9] = set[9] + 1
-            set[10] = set[10] + 1
-        elif length < 50:
-            set[10] = set[10] + 1
-
+    num = 0  # nums of all reachable nodes
+    for source in paths:
+        num += (len(paths[source]) - 1)
+        for target in paths[source]:
+            length = paths[source][target]
+            if length < base:
+                set[1] = set[1] + 1
+                set[2] = set[2] + 1
+                set[3] = set[3] + 1
+                set[4] = set[4] + 1
+                set[5] = set[5] + 1
+                set[6] = set[6] + 1
+                set[7] = set[7] + 1
+                set[8] = set[8] + 1
+                set[9] = set[9] + 1
+                set[10] = set[10] + 1
+            elif length < base * 2:
+                set[2] = set[2] + 1
+                set[3] = set[3] + 1
+                set[4] = set[4] + 1
+                set[5] = set[5] + 1
+                set[6] = set[6] + 1
+                set[7] = set[7] + 1
+                set[8] = set[8] + 1
+                set[9] = set[9] + 1
+                set[10] = set[10] + 1
+            elif length < base * 3:
+                set[3] = set[3] + 1
+                set[4] = set[4] + 1
+                set[5] = set[5] + 1
+                set[6] = set[6] + 1
+                set[7] = set[7] + 1
+                set[8] = set[8] + 1
+                set[9] = set[9] + 1
+                set[10] = set[10] + 1
+            elif length < base * 4:
+                set[4] = set[4] + 1
+                set[5] = set[5] + 1
+                set[6] = set[6] + 1
+                set[7] = set[7] + 1
+                set[8] = set[8] + 1
+                set[9] = set[9] + 1
+                set[10] = set[10] + 1
+            elif length < base * 5:
+                set[5] = set[5] + 1
+                set[6] = set[6] + 1
+                set[7] = set[7] + 1
+                set[8] = set[8] + 1
+                set[9] = set[9] + 1
+                set[10] = set[10] + 1
+            elif length < base * 6:
+                set[6] = set[6] + 1
+                set[7] = set[7] + 1
+                set[8] = set[8] + 1
+                set[9] = set[9] + 1
+                set[10] = set[10] + 1
+            elif length < base * 7:
+                set[7] = set[7] + 1
+                set[8] = set[8] + 1
+                set[9] = set[9] + 1
+                set[10] = set[10] + 1
+            elif length < base * 8:
+                set[8] = set[8] + 1
+                set[9] = set[9] + 1
+                set[10] = set[10] + 1
+            elif length < base * 9:
+                set[9] = set[9] + 1
+                set[10] = set[10] + 1
+            elif length < base * 10:
+                set[10] = set[10] + 1
     end = timeit.default_timer()
-    with open("hopplot/ca-GrQc-hp.txt", 'a') as file:
+    with open("hopplot/caGrQc.txt", 'a') as file:
         string = "initial--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
         file.write(string)
 
-
     start = timeit.default_timer()
-    Gs1 = nx.read_edgelist("Data/minGrQc-edges-0.1.txt")
-    isolatednodes = getIsolatedNodes("Data/minGrQc-edges-0.1.txt", "Data/minGrQc-nodes-0.1.txt")
+    edgename = "Data/min" + commontext + "-edges-" + str(compress) + ".txt"
+    nodename = "Data/min" + commontext + "-nodes-" + str(compress) + ".txt"
+    Gs1 = nx.read_edgelist(edgename)
+    isolatednodes = getIsolatedNodes(edgename, nodename)
     Gs1.add_nodes_from(isolatednodes)
-
-    components1 = nx.connected_components(Gs1)
-    pairs1 = []
+    paths1 = dict(nx.shortest_path_length(Gs1))
     set1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    num1=0
-    for c in components1:
-        c = list(c)
-        for i in range(len(c) - 1):
-            for j in range(i + 1, len(c)):
-                pairs1.append((c[i], c[j]))
-                num1 = num1 + 1
-    number1 = len(nx.nodes(Gs1)) * (len(nx.nodes(Gs1)) - 1) / 2
-    print(num1)
-    print(number1)
-    for pair in pairs1:
-        length = nx.shortest_path_length(Gs1, pair[0], pair[1])
-        if length < 1:
-            set1[1] = set1[1] + 1
-            set1[2] = set1[2] + 1
-            set1[3] = set1[3] + 1
-            set1[4] = set1[4] + 1
-            set1[5] = set1[5] + 1
-            set1[6] = set1[6] + 1
-            set1[7] = set1[7] + 1
-            set1[8] = set1[8] + 1
-            set1[9] = set1[9] + 1
-            set1[10] = set1[10] + 1
-        elif length < 2:
-            set1[2] = set1[2] + 1
-            set1[3] = set1[3] + 1
-            set1[4] = set1[4] + 1
-            set1[5] = set1[5] + 1
-            set1[6] = set1[6] + 1
-            set1[7] = set1[7] + 1
-            set1[8] = set1[8] + 1
-            set1[9] = set1[9] + 1
-            set1[10] = set1[10] + 1
-        elif length < 3:
-            set1[3] = set1[3] + 1
-            set1[4] = set1[4] + 1
-            set1[5] = set1[5] + 1
-            set1[6] = set1[6] + 1
-            set1[7] = set1[7] + 1
-            set1[8] = set1[8] + 1
-            set1[9] = set1[9] + 1
-            set1[10] = set1[10] + 1
-        elif length < 4:
-            set1[4] = set1[4] + 1
-            set1[5] = set1[5] + 1
-            set1[6] = set1[6] + 1
-            set1[7] = set1[7] + 1
-            set1[8] = set1[8] + 1
-            set1[9] = set1[9] + 1
-            set1[10] = set1[10] + 1
-        elif length < 5:
-            set1[5] = set1[5] + 1
-            set1[6] = set1[6] + 1
-            set1[7] = set1[7] + 1
-            set1[8] = set1[8] + 1
-            set1[9] = set1[9] + 1
-            set1[10] = set1[10] + 1
-        elif length < 6:
-            set1[6] = set1[6] + 1
-            set1[7] = set1[7] + 1
-            set1[8] = set1[8] + 1
-            set1[9] = set1[9] + 1
-            set1[10] = set1[10] + 1
-        elif length < 7:
-            set1[7] = set1[7] + 1
-            set1[8] = set1[8] + 1
-            set1[9] = set1[9] + 1
-            set1[10] = set1[10] + 1
-        elif length < 8:
-            set1[8] = set1[8] + 1
-            set1[9] = set1[9] + 1
-            set1[10] = set1[10] + 1
-        elif length < 9:
-            set1[9] = set1[9] + 1
-            set1[10] = set1[10] + 1
-        elif length < 10:
-            set1[10] = set1[10] + 1
-
+    num1 = 0
+    for source in paths1:
+        num1 += (len(paths1[source]) - 1)
+        for target in paths1[source]:
+            length = paths1[source][target]
+            if length < base:
+                set1[1] = set1[1] + 1
+                set1[2] = set1[2] + 1
+                set1[3] = set1[3] + 1
+                set1[4] = set1[4] + 1
+                set1[5] = set1[5] + 1
+                set1[6] = set1[6] + 1
+                set1[7] = set1[7] + 1
+                set1[8] = set1[8] + 1
+                set1[9] = set1[9] + 1
+                set1[10] = set1[10] + 1
+            elif length < base * 2:
+                set1[2] = set1[2] + 1
+                set1[3] = set1[3] + 1
+                set1[4] = set1[4] + 1
+                set1[5] = set1[5] + 1
+                set1[6] = set1[6] + 1
+                set1[7] = set1[7] + 1
+                set1[8] = set1[8] + 1
+                set1[9] = set1[9] + 1
+                set1[10] = set1[10] + 1
+            elif length < base * 3:
+                set1[3] = set1[3] + 1
+                set1[4] = set1[4] + 1
+                set1[5] = set1[5] + 1
+                set1[6] = set1[6] + 1
+                set1[7] = set1[7] + 1
+                set1[8] = set1[8] + 1
+                set1[9] = set1[9] + 1
+                set1[10] = set1[10] + 1
+            elif length < base * 4:
+                set1[4] = set1[4] + 1
+                set1[5] = set1[5] + 1
+                set1[6] = set1[6] + 1
+                set1[7] = set1[7] + 1
+                set1[8] = set1[8] + 1
+                set1[9] = set1[9] + 1
+                set1[10] = set1[10] + 1
+            elif length < base * 5:
+                set1[5] = set1[5] + 1
+                set1[6] = set1[6] + 1
+                set1[7] = set1[7] + 1
+                set1[8] = set1[8] + 1
+                set1[9] = set1[9] + 1
+                set1[10] = set1[10] + 1
+            elif length < base * 6:
+                set1[6] = set1[6] + 1
+                set1[7] = set1[7] + 1
+                set1[8] = set1[8] + 1
+                set1[9] = set1[9] + 1
+                set1[10] = set1[10] + 1
+            elif length < base * 7:
+                set1[7] = set1[7] + 1
+                set1[8] = set1[8] + 1
+                set1[9] = set1[9] + 1
+                set1[10] = set1[10] + 1
+            elif length < base * 8:
+                set1[8] = set1[8] + 1
+                set1[9] = set1[9] + 1
+                set1[10] = set1[10] + 1
+            elif length < base * 9:
+                set1[9] = set1[9] + 1
+                set1[10] = set1[10] + 1
+            elif length < base * 10:
+                set1[10] = set1[10] + 1
     end = timeit.default_timer()
-    with open("hopplot/ca-GrQc-hp.txt", 'a') as file:
-        string = "vldb--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
+    with open("hopplot/caGrQc.txt", 'a') as file:
+        string = "UDS--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
         file.write(string)
 
     start = timeit.default_timer()
-    Gs2 = nx.read_edgelist("Data/minGrQc-edges-ADR-0.1.txt")
-    components2 = nx.connected_components(Gs2)
-    pairs2 = []
+    edgename = "Data/min" + commontext + "-edges-ADR-" + str(compress) + ".txt"
+    Gs2 = nx.read_edgelist(edgename)
+    paths2 = dict(nx.shortest_path_length(Gs2))
     set2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    num2=0
-    for c in components2:
-        c = list(c)
-        for i in range(len(c) - 1):
-            for j in range(i + 1, len(c)):
-                pairs2.append((c[i], c[j]))
-                num2 = num2 + 1
-    number2 = len(nx.nodes(Gs2)) * (len(nx.nodes(Gs2)) - 1) / 2
-    print(num2)
-    print(number2)
-    for pair in pairs2:
-        length = nx.shortest_path_length(Gs2, pair[0], pair[1])*(compress*(2-compress))
-        if length < 5:
-            set2[1] = set2[1] + 1
-            set2[2] = set2[2] + 1
-            set2[3] = set2[3] + 1
-            set2[4] = set2[4] + 1
-            set2[5] = set2[5] + 1
-            set2[6] = set2[6] + 1
-            set2[7] = set2[7] + 1
-            set2[8] = set2[8] + 1
-            set2[9] = set2[9] + 1
-            set2[10] = set2[10] + 1
-        elif length < 10:
-            set2[2] = set2[2] + 1
-            set2[3] = set2[3] + 1
-            set2[4] = set2[4] + 1
-            set2[5] = set2[5] + 1
-            set2[6] = set2[6] + 1
-            set2[7] = set2[7] + 1
-            set2[8] = set2[8] + 1
-            set2[9] = set2[9] + 1
-            set2[10] = set2[10] + 1
-        elif length < 15:
-            set2[3] = set2[3] + 1
-            set2[4] = set2[4] + 1
-            set2[5] = set2[5] + 1
-            set2[6] = set2[6] + 1
-            set2[7] = set2[7] + 1
-            set2[8] = set2[8] + 1
-            set2[9] = set2[9] + 1
-            set2[10] = set2[10] + 1
-        elif length < 20:
-            set2[4] = set2[4] + 1
-            set2[5] = set2[5] + 1
-            set2[6] = set2[6] + 1
-            set2[7] = set2[7] + 1
-            set2[8] = set2[8] + 1
-            set2[9] = set2[9] + 1
-            set2[10] = set2[10] + 1
-        elif length < 25:
-            set2[5] = set2[5] + 1
-            set2[6] = set2[6] + 1
-            set2[7] = set2[7] + 1
-            set2[8] = set2[8] + 1
-            set2[9] = set2[9] + 1
-            set2[10] = set2[10] + 1
-        elif length < 30:
-            set2[6] = set2[6] + 1
-            set2[7] = set2[7] + 1
-            set2[8] = set2[8] + 1
-            set2[9] = set2[9] + 1
-            set2[10] = set2[10] + 1
-        elif length < 35:
-            set2[7] = set2[7] + 1
-            set2[8] = set2[8] + 1
-            set2[9] = set2[9] + 1
-            set2[10] = set2[10] + 1
-        elif length < 40:
-            set2[8] = set2[8] + 1
-            set2[9] = set2[9] + 1
-            set2[10] = set2[10] + 1
-        elif length < 45:
-            set2[9] = set2[9] + 1
-            set2[10] = set2[10] + 1
-        elif length < 50:
-            set2[10] = set2[10] + 1
-
+    num2 = 0
+    for source in paths2:
+        num2 += (len(paths2[source]) - 1)
+        for target in paths2[source]:
+            length = paths2[source][target] *(compress+0.65*(1-compress))
+            if length < base:
+                set2[1] = set2[1] + 1
+                set2[2] = set2[2] + 1
+                set2[3] = set2[3] + 1
+                set2[4] = set2[4] + 1
+                set2[5] = set2[5] + 1
+                set2[6] = set2[6] + 1
+                set2[7] = set2[7] + 1
+                set2[8] = set2[8] + 1
+                set2[9] = set2[9] + 1
+                set2[10] = set2[10] + 1
+            elif length < base * 2:
+                set2[2] = set2[2] + 1
+                set2[3] = set2[3] + 1
+                set2[4] = set2[4] + 1
+                set2[5] = set2[5] + 1
+                set2[6] = set2[6] + 1
+                set2[7] = set2[7] + 1
+                set2[8] = set2[8] + 1
+                set2[9] = set2[9] + 1
+                set2[10] = set2[10] + 1
+            elif length < base * 3:
+                set2[3] = set2[3] + 1
+                set2[4] = set2[4] + 1
+                set2[5] = set2[5] + 1
+                set2[6] = set2[6] + 1
+                set2[7] = set2[7] + 1
+                set2[8] = set2[8] + 1
+                set2[9] = set2[9] + 1
+                set2[10] = set2[10] + 1
+            elif length < base * 4:
+                set2[4] = set2[4] + 1
+                set2[5] = set2[5] + 1
+                set2[6] = set2[6] + 1
+                set2[7] = set2[7] + 1
+                set2[8] = set2[8] + 1
+                set2[9] = set2[9] + 1
+                set2[10] = set2[10] + 1
+            elif length < base * 5:
+                set2[5] = set2[5] + 1
+                set2[6] = set2[6] + 1
+                set2[7] = set2[7] + 1
+                set2[8] = set2[8] + 1
+                set2[9] = set2[9] + 1
+                set2[10] = set2[10] + 1
+            elif length < base * 6:
+                set2[6] = set2[6] + 1
+                set2[7] = set2[7] + 1
+                set2[8] = set2[8] + 1
+                set2[9] = set2[9] + 1
+                set2[10] = set2[10] + 1
+            elif length < base * 7:
+                set2[7] = set2[7] + 1
+                set2[8] = set2[8] + 1
+                set2[9] = set2[9] + 1
+                set2[10] = set2[10] + 1
+            elif length < base * 8:
+                set2[8] = set2[8] + 1
+                set2[9] = set2[9] + 1
+                set2[10] = set2[10] + 1
+            elif length < base * 9:
+                set2[9] = set2[9] + 1
+                set2[10] = set2[10] + 1
+            elif length < base * 10:
+                set2[10] = set2[10] + 1
     end = timeit.default_timer()
-    with open("hopplot/ca-GrQc-hp.txt", 'a') as file:
+    with open("hopplot/caGrQc.txt", 'a') as file:
         string = "ADR--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
         file.write(string)
 
     start = timeit.default_timer()
-    Gs3 = nx.read_edgelist("Data/minGrQc-edges-ABM-0.1.txt")
-
-    components3 = nx.connected_components(Gs3)
-    pairs3 = []
+    edgename = "Data/min" + commontext + "-edges-ABM-" + str(compress) + ".txt"
+    Gs3 = nx.read_edgelist(edgename)
+    paths3 = dict(nx.shortest_path_length(Gs3))
     set3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    num3=0
-    for c in components3:
-        c = list(c)
-        for i in range(len(c) - 1):
-            for j in range(i + 1, len(c)):
-                pairs3.append((c[i], c[j]))
-                num3=num3+1
-    number3 = len(nx.nodes(Gs3)) * (len(nx.nodes(Gs3)) - 1) / 2
-    print(num3)
-    print(number3)
-    for pair in pairs3:
-        length = nx.shortest_path_length(Gs3, pair[0], pair[1])*(compress*(2-compress))
-        if length < 5:
-            set3[1] = set3[1] + 1
-            set3[2] = set3[2] + 1
-            set3[3] = set3[3] + 1
-            set3[4] = set3[4] + 1
-            set3[5] = set3[5] + 1
-            set3[6] = set3[6] + 1
-            set3[7] = set3[7] + 1
-            set3[8] = set3[8] + 1
-            set3[9] = set3[9] + 1
-            set3[10] = set3[10] + 1
-        elif length < 10:
-            set3[2] = set3[2] + 1
-            set3[3] = set3[3] + 1
-            set3[4] = set3[4] + 1
-            set3[5] = set3[5] + 1
-            set3[6] = set3[6] + 1
-            set3[7] = set3[7] + 1
-            set3[8] = set3[8] + 1
-            set3[9] = set3[9] + 1
-            set3[10] = set3[10] + 1
-        elif length < 15:
-            set3[3] = set3[3] + 1
-            set3[4] = set3[4] + 1
-            set3[5] = set3[5] + 1
-            set3[6] = set3[6] + 1
-            set3[7] = set3[7] + 1
-            set3[8] = set3[8] + 1
-            set3[9] = set3[9] + 1
-            set3[10] = set3[10] + 1
-        elif length < 20:
-            set3[4] = set3[4] + 1
-            set3[5] = set3[5] + 1
-            set3[6] = set3[6] + 1
-            set3[7] = set3[7] + 1
-            set3[8] = set3[8] + 1
-            set3[9] = set3[9] + 1
-            set3[10] = set3[10] + 1
-        elif length < 25:
-            set3[5] = set3[5] + 1
-            set3[6] = set3[6] + 1
-            set3[7] = set3[7] + 1
-            set3[8] = set3[8] + 1
-            set3[9] = set3[9] + 1
-            set3[10] = set3[10] + 1
-        elif length < 30:
-            set3[6] = set3[6] + 1
-            set3[7] = set3[7] + 1
-            set3[8] = set3[8] + 1
-            set3[9] = set3[9] + 1
-            set3[10] = set3[10] + 1
-        elif length < 35:
-            set3[7] = set3[7] + 1
-            set3[8] = set3[8] + 1
-            set3[9] = set3[9] + 1
-            set3[10] = set3[10] + 1
-        elif length < 40:
-            set3[8] = set3[8] + 1
-            set3[9] = set3[9] + 1
-            set3[10] = set3[10] + 1
-        elif length < 45:
-            set3[9] = set3[9] + 1
-            set3[10] = set3[10] + 1
-        elif length < 50:
-            set3[10] = set3[10] + 1
-
+    num3 = 0
+    for source in paths3:
+        num3 += (len(paths3[source]) - 1)
+        for target in paths3[source]:
+            length = paths3[source][target] *(compress+0.65*(1-compress))
+            if length < base:
+                set3[1] = set3[1] + 1
+                set3[2] = set3[2] + 1
+                set3[3] = set3[3] + 1
+                set3[4] = set3[4] + 1
+                set3[5] = set3[5] + 1
+                set3[6] = set3[6] + 1
+                set3[7] = set3[7] + 1
+                set3[8] = set3[8] + 1
+                set3[9] = set3[9] + 1
+                set3[10] = set3[10] + 1
+            elif length < base * 2:
+                set3[2] = set3[2] + 1
+                set3[3] = set3[3] + 1
+                set3[4] = set3[4] + 1
+                set3[5] = set3[5] + 1
+                set3[6] = set3[6] + 1
+                set3[7] = set3[7] + 1
+                set3[8] = set3[8] + 1
+                set3[9] = set3[9] + 1
+                set3[10] = set3[10] + 1
+            elif length < base * 3:
+                set3[3] = set3[3] + 1
+                set3[4] = set3[4] + 1
+                set3[5] = set3[5] + 1
+                set3[6] = set3[6] + 1
+                set3[7] = set3[7] + 1
+                set3[8] = set3[8] + 1
+                set3[9] = set3[9] + 1
+                set3[10] = set3[10] + 1
+            elif length < base * 4:
+                set3[4] = set3[4] + 1
+                set3[5] = set3[5] + 1
+                set3[6] = set3[6] + 1
+                set3[7] = set3[7] + 1
+                set3[8] = set3[8] + 1
+                set3[9] = set3[9] + 1
+                set3[10] = set3[10] + 1
+            elif length < base * 5:
+                set3[5] = set3[5] + 1
+                set3[6] = set3[6] + 1
+                set3[7] = set3[7] + 1
+                set3[8] = set3[8] + 1
+                set3[9] = set3[9] + 1
+                set3[10] = set3[10] + 1
+            elif length < base * 6:
+                set3[6] = set3[6] + 1
+                set3[7] = set3[7] + 1
+                set3[8] = set3[8] + 1
+                set3[9] = set3[9] + 1
+                set3[10] = set3[10] + 1
+            elif length < base * 7:
+                set3[7] = set3[7] + 1
+                set3[8] = set3[8] + 1
+                set3[9] = set3[9] + 1
+                set3[10] = set3[10] + 1
+            elif length < base * 8:
+                set3[8] = set3[8] + 1
+                set3[9] = set3[9] + 1
+                set3[10] = set3[10] + 1
+            elif length < base * 9:
+                set3[9] = set3[9] + 1
+                set3[10] = set3[10] + 1
+            elif length < base * 10:
+                set3[10] = set3[10] + 1
     end = timeit.default_timer()
-    with open("hopplot/ca-GrQc-hp.txt", 'a') as file:
+    with open("hopplot/caGrQc.txt", 'a') as file:
         string = "ABM--- compression:" + str(compress) + " time:" + str(end - start) + '\n'
         file.write(string)
 
-    x = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
-    y = [z / number for z in set]
-    x1 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    y1 = [z / number1 for z in set1]
-    x2 = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
-    y2 = [z / number2 for z in set2]
-    x3 = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
-    y3 = [z / number3 for z in set3]
+    x = [0, base, base * 2, base * 3, base * 4, base * 5, base * 6, base * 7, base * 8, base * 9, base * 10]
+    y = [z / num for z in set]
+    x1 = [0, base, base * 2, base * 3, base * 4, base * 5, base * 6, base * 7, base * 8, base * 9, base * 10]
+    y1 = [z / num1 for z in set1]
+    x2 = [0, base, base * 2, base * 3, base * 4, base * 5, base * 6, base * 7, base * 8, base * 9, base * 10]
+    y2 = [z / num2 for z in set2]
+    x3 = [0, base, base * 2, base * 3, base * 4, base * 5, base * 6, base * 7, base * 8, base * 9, base * 10]
+    y3 = [z / num3 for z in set3]
+
+    # save
+    A = np.array([x, y])
+    A1 = np.array([x1, y1])
+    A2 = np.array([x2, y2])
+    A3 = np.array([x3, y3])
+
+    data = pd.DataFrame(A)
+    data1 = pd.DataFrame(A1)
+    data2 = pd.DataFrame(A2)
+    data3 = pd.DataFrame(A3)
+
+    book = load_workbook('Picture/hp.xlsx')
+    writer = pd.ExcelWriter('Picture/hp.xlsx', engine='openpyxl')
+    writer.book = book
+
+    pagename = "caGrQc" + str(compress)
+    data.to_excel(writer, sheet_name=pagename, float_format='%.5f')
+    data1.to_excel(writer, sheet_name=pagename, startrow=3, float_format='%.5f')
+    data2.to_excel(writer, sheet_name=pagename, startrow=6, float_format='%.5f')
+    data3.to_excel(writer, sheet_name=pagename, startrow=9, float_format='%.5f')
+    writer.save()
+
+    writer.close()
 
     plt.plot(x, y, marker='o', mec='k', mfc='w', c='k', label=u'initial')
-    plt.plot(x1, y1, marker='v', mec='#EEB422', mfc='w', c='#EEB422', label=u'vldb-0.1')
-    plt.plot(x2, y2, marker='s', mec='r', mfc='w', c='r', label=u'ADR-0.1')
-    plt.plot(x3, y3, marker='+', mec='#00BFFF', mfc='w', c='#00BFFF', label=u'ABM-0.1')
+    plt.plot(x1, y1, marker='v', mec='#EEB422', mfc='w', c='#EEB422', label=u'UDS')
+    plt.plot(x2, y2, marker='s', mec='r', mfc='w', c='r', label=u'ADR')
+    plt.plot(x3, y3, marker='+', mec='#00BFFF', mfc='w', c='#00BFFF', label=u'ABM')
 
     plt.legend()  # 让图例生效
-    #plt.xticks(x, [z[0] for z in length2num])
+    plt.xticks(x, [0, base, base * 2, base * 3, base * 4, base * 5, base * 6, base * 7, base * 8, base * 9, base * 10])
     plt.margins(0)
     plt.subplots_adjust(bottom=0.15)
-    plt.xlabel(u"distance")  # X轴标签
-    plt.ylabel("% of vertex pairs")  # Y轴标签
-    plt.title("ca-GrQc")  # 标题
+    plt.xlabel(u"distance")  # X
+    plt.ylabel("% of vertex pairs")  # Y
+    plt.title("ca-GrQc")  # title
 
     plt.show()
 
 
-
-
 if __name__ == '__main__':
-    G = nx.read_edgelist('Database/ca-HepPh.txt')
-    # topk()
-    #link()
-    hopplot()
-    #coefficient()
+    topk()
+    # link()
+    # VertexDegree()
+    # ShortPath()
+    # centrality()
+    # coefficient()
+    # hopplot()
