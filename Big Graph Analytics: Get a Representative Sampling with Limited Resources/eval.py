@@ -40,7 +40,7 @@ def topk():
         Gs1.add_nodes_from(isolatednodes)
         k1 = round(len(nx.nodes(Gs1)) * t / 100)
         pagerank = nx.pagerank(Gs1)
-        pagerank = sorted(pagerank.items(), key=lambda x: x[1], reverse=True)  # 变成list了
+        pagerank = sorted(pagerank.items(), key=lambda x: x[1], reverse=True)  # list
         nodes_GS1 = []
         for i in range(k1):
             key = pagerank[i][0]
@@ -55,7 +55,7 @@ def topk():
         Gs2 = nx.read_edgelist("Data/minEmail-edges-ADR-0.1.txt")
         k2 = round(len(nx.nodes(Gs2)) * t / 100)
         pagerank = nx.pagerank(Gs2)
-        pagerank = sorted(pagerank.items(), key=lambda x: x[1], reverse=True)  # 变成list了
+        pagerank = sorted(pagerank.items(), key=lambda x: x[1], reverse=True)  # list
         nodes_GS2 = []
         for i in range(k):
             key = pagerank[i][0]
@@ -70,7 +70,7 @@ def topk():
         Gs3 = nx.read_edgelist("Data/minEmail-edges-ABM-0.1.txt")
         k3 = round(len(nx.nodes(Gs3)) * t / 100)
         pagerank = nx.pagerank(Gs3)
-        pagerank = sorted(pagerank.items(), key=lambda x: x[1], reverse=True)  # 变成list了
+        pagerank = sorted(pagerank.items(), key=lambda x: x[1], reverse=True)  # list
         nodes_GS3 = []
         for i in range(k):
             key = pagerank[i][0]
@@ -116,7 +116,6 @@ def topk():
 
 
 def link():
-    # 进行测试
     compress = 0.6
     count = 5
 
@@ -238,7 +237,7 @@ def link():
         for i in range(int(total / 2)):
             a = random.choice(nodelist1)
             type = node2label_Gs1[a]
-            # 找到与a相同聚类的点
+            
             candidates = []
             for node in node2label_Gs1:
                 if node2label_Gs1[node] == type:
@@ -271,7 +270,7 @@ def link():
         for i in range(int(total / 2)):
             a = random.choice(nodelist2)
             type = node2label_Gs2[a]
-            # 找到与a相同聚类的点
+            
             candidates = []
             for node in node2label_Gs2:
                 if node2label_Gs2[node] == type:
@@ -304,7 +303,7 @@ def link():
         for i in range(int(total / 2)):
             a = random.choice(nodelist3)
             type = node2label_Gs3[a]
-            # 找到与a相同聚类的点
+           
             candidates = []
             for node in node2label_Gs3:
                 if node2label_Gs3[node] == type:
@@ -1375,7 +1374,7 @@ def hopplot():
     plt.plot(x2, y2, marker='s', mec='r', mfc='w', c='r', label=u'ADR')
     plt.plot(x3, y3, marker='+', mec='#00BFFF', mfc='w', c='#00BFFF', label=u'ABM')
 
-    plt.legend()  # 让图例生效
+    plt.legend() 
     plt.xticks(x, [0, base, base * 2, base * 3, base * 4, base * 5, base * 6, base * 7, base * 8, base * 9, base * 10])
     plt.margins(0)
     plt.subplots_adjust(bottom=0.15)
