@@ -1,2 +1,2 @@
-# Big-Graph-Analytics-Get-a-Representative-Sampling-with-Limited-Resources
-Big Graph Analytics: Graph Sparsification under Resource Constraints
+# Selective Edge Shedding in Large Graphs Under Resource Constraints
+Selective Edge Shedding in Large Graphs Under Resource Constraints
