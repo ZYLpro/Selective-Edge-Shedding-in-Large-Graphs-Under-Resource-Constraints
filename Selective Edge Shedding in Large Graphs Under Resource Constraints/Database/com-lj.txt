@@ -1,0 +1,2 @@
+URL: http://snap.stanford.edu/data/com-LiveJournal.html
+PLEASE ACCESS THIS DATASET USING THE URL.
